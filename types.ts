@@ -1,7 +1,9 @@
+
 export enum ModuleType {
   DATA_ENTRY = 'DATA_ENTRY',
   NAVIGATION = 'NAVIGATION',
-  INFO_MGMT = 'INFO_MGMT'
+  INFO_MGMT = 'INFO_MGMT',
+  REAL_WORLD = 'REAL_WORLD'
 }
 
 export interface Student {

@@ -118,18 +118,18 @@ export const DataEntryModule: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Content Area */}
-                <div className="flex flex-col md:flex-row flex-1">
+                {/* Content Area - Responsive Switch: Vertical on Tablet (md), Horizontal on Desktop (lg) */}
+                <div className="flex flex-col lg:flex-row flex-1">
                     {/* Sidebar Image */}
-                    <div className="w-full md:w-1/3 bg-indigo-900 p-4 flex flex-row md:flex-col items-center md:justify-start justify-between md:pt-8 text-indigo-100 border-b md:border-b-0 md:border-r border-indigo-800">
-                         <div className="flex md:flex-col items-center gap-4 md:gap-0">
-                           {wizardData.step === 1 && <User size={32} className="md:w-12 md:h-12" strokeWidth={1.5} />}
-                           {wizardData.step === 2 && <Monitor size={32} className="md:w-12 md:h-12" strokeWidth={1.5} />}
-                           {wizardData.step === 3 && <HardDrive size={32} className="md:w-12 md:h-12" strokeWidth={1.5} />}
-                           <span className="md:hidden font-bold text-sm">Paso {wizardData.step} de 3</span>
+                    <div className="w-full lg:w-1/3 bg-indigo-900 p-4 flex flex-row lg:flex-col items-center lg:justify-start justify-between lg:pt-8 text-indigo-100 border-b lg:border-b-0 lg:border-r border-indigo-800">
+                         <div className="flex lg:flex-col items-center gap-4 lg:gap-0">
+                           {wizardData.step === 1 && <User size={32} className="lg:w-12 lg:h-12" strokeWidth={1.5} />}
+                           {wizardData.step === 2 && <Monitor size={32} className="lg:w-12 lg:h-12" strokeWidth={1.5} />}
+                           {wizardData.step === 3 && <HardDrive size={32} className="lg:w-12 lg:h-12" strokeWidth={1.5} />}
+                           <span className="lg:hidden font-bold text-sm">Paso {wizardData.step} de 3</span>
                          </div>
                          
-                         <div className="mt-0 md:mt-8 flex md:flex-col gap-1 md:space-y-2 text-[10px] hidden md:flex w-full">
+                         <div className="mt-0 lg:mt-8 flex lg:flex-col gap-1 lg:space-y-2 text-[10px] hidden lg:flex w-full">
                             <div className={`p-1 rounded ${wizardData.step === 1 ? 'bg-indigo-700 font-bold' : 'opacity-50'}`}>1. Identidad</div>
                             <div className={`p-1 rounded ${wizardData.step === 2 ? 'bg-indigo-700 font-bold' : 'opacity-50'}`}>2. Contacto</div>
                             <div className={`p-1 rounded ${wizardData.step === 3 ? 'bg-indigo-700 font-bold' : 'opacity-50'}`}>3. Finalizar</div>
@@ -137,7 +137,7 @@ export const DataEntryModule: React.FC = () => {
                     </div>
 
                     {/* Main Form */}
-                    <div className="w-full md:w-2/3 bg-white p-6 flex flex-col">
+                    <div className="w-full lg:w-2/3 bg-white p-6 flex flex-col">
                         <div className="mb-4 border-b pb-2">
                              <h4 className="font-bold text-slate-800">
                                 {wizardData.step === 1 && "Información del Estudiante"}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { PatternCard } from '../PatternCard';
 import { Student } from '../../types';
 import { generateMockStudents } from '../../services/geminiService';
-import { Search, Printer, Filter, Download, ArrowUp, ArrowDown, FileSpreadsheet, FileText, FileJson, ChevronDown } from 'lucide-react';
+import { Search, Printer, Filter, Download, ArrowUp, ArrowDown, FileSpreadsheet, FileText, FileJson, ChevronDown, Trash2, Edit, ShieldAlert } from 'lucide-react';
 
 const INITIAL_DATA: Student[] = [
   { id: '1001', name: 'Ana Garcia', major: 'Ingeniería', gpa: 3.8, status: 'Active' },
@@ -17,7 +17,11 @@ const INITIAL_DATA: Student[] = [
 type SortKey = 'name' | 'gpa';
 type SortDirection = 'asc' | 'desc';
 
-export const InfoManagementModule: React.FC = () => {
+interface InfoManagementModuleProps {
+    userRole: 'Admin' | 'Student';
+}
+
+export const InfoManagementModule: React.FC<InfoManagementModuleProps> = ({ userRole }) => {
   const [data, setData] = useState<Student[]>(INITIAL_DATA);
   const [filterText, setFilterText] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
@@ -70,6 +74,12 @@ export const InfoManagementModule: React.FC = () => {
       } else {
           setSortKey(key);
           setSortDirection('asc');
+      }
+  };
+
+  const handleDelete = (id: string) => {
+      if(window.confirm('¿Está seguro de eliminar este registro? (Solo Admin)')) {
+          setData(prev => prev.filter(s => s.id !== id));
       }
   };
 
@@ -129,10 +139,45 @@ export const InfoManagementModule: React.FC = () => {
   return (
     <div className="space-y-6 pb-20">
       
-      {/* Controls */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 justify-between items-center no-print">
-         <div className="flex gap-4 w-full md:w-auto relative">
-            <div className="relative w-full md:w-72">
+      {/* Role Indicator Banner */}
+      <div className={`p-3 rounded-lg border flex items-center justify-between ${userRole === 'Admin' ? 'bg-red-50 border-red-200 text-red-800' : 'bg-blue-50 border-blue-200 text-blue-800'}`}>
+         <div className="flex items-center gap-2">
+            <ShieldAlert size={20} />
+            <span className="font-bold text-sm">Vista actual: {userRole}</span>
+         </div>
+         <span className="text-xs opacity-75">
+             {userRole === 'Admin' ? 'Tiene permisos totales de edición.' : 'Modo de solo lectura.'}
+         </span>
+      </div>
+
+      {/* Admin Exclusive Panel */}
+      {userRole === 'Admin' && (
+          <div className="bg-slate-800 text-white p-4 rounded-xl shadow-lg border border-slate-700 animate-in fade-in slide-in-from-top-4">
+              <h3 className="font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <SettingsIcon size={16} className="text-red-400" />
+                  Panel de Administración
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-slate-700 p-3 rounded hover:bg-slate-600 cursor-pointer text-center text-xs">
+                      <div className="font-bold text-lg">System Logs</div>
+                      <div className="text-slate-400">Ver actividad</div>
+                  </div>
+                  <div className="bg-slate-700 p-3 rounded hover:bg-slate-600 cursor-pointer text-center text-xs">
+                      <div className="font-bold text-lg">{data.length}</div>
+                      <div className="text-slate-400">Total Records</div>
+                  </div>
+                  <div className="bg-slate-700 p-3 rounded hover:bg-slate-600 cursor-pointer text-center text-xs border border-red-500/30">
+                      <div className="font-bold text-lg text-red-300">Purgar DB</div>
+                      <div className="text-slate-400">Eliminar todo</div>
+                  </div>
+              </div>
+          </div>
+      )}
+
+      {/* Controls - Stacks on Mobile/Tablet, Row on Desktop (LG) */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col lg:flex-row gap-4 justify-between items-center no-print">
+         <div className="flex gap-4 w-full lg:w-auto relative">
+            <div className="relative w-full lg:w-72">
               <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
               <input 
                 type="text"
@@ -143,7 +188,6 @@ export const InfoManagementModule: React.FC = () => {
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 onFocus={() => filterText && setShowSuggestions(true)}
               />
-              {/* Autocomplete Dropdown - Predictor */}
               {showSuggestions && autocompleteSuggestions.length > 0 && (
                 <div className="absolute top-full left-0 w-full bg-white border border-slate-200 rounded-lg shadow-xl mt-1 z-20 overflow-hidden">
                    <div className="bg-slate-50 px-3 py-1 text-[10px] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-100">
@@ -153,7 +197,7 @@ export const InfoManagementModule: React.FC = () => {
                      <div 
                         key={idx} 
                         className="px-4 py-2 hover:bg-indigo-50 hover:text-indigo-700 cursor-pointer text-sm text-slate-700 flex justify-between items-center group"
-                        onMouseDown={() => setFilterText(s)} // Use onMouseDown to prevent blur before click
+                        onMouseDown={() => setFilterText(s)}
                      >
                        <span>{s}</span>
                        <span className="text-slate-300 group-hover:text-indigo-300 text-xs">Reg.</span>
@@ -178,7 +222,7 @@ export const InfoManagementModule: React.FC = () => {
             </div>
          </div>
 
-         <div className="flex gap-2 relative" ref={exportMenuRef}>
+         <div className="flex gap-2 relative w-full lg:w-auto justify-end" ref={exportMenuRef}>
             <button 
               onClick={handleGenerateData}
               disabled={loading}
@@ -198,7 +242,6 @@ export const InfoManagementModule: React.FC = () => {
                    <ChevronDown size={14} className={`transition-transform duration-200 ${showExportMenu ? 'rotate-180' : ''}`} />
                 </button>
                 
-                {/* Export Options Dropdown */}
                 {showExportMenu && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 z-30 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="p-1">
@@ -242,7 +285,11 @@ export const InfoManagementModule: React.FC = () => {
                         Promedio <SortIcon colKey="gpa" />
                     </div>
                  </th>
-                 <th className="px-6 py-3 rounded-tr-lg">Estado</th>
+                 <th className="px-6 py-3">Estado</th>
+                 {/* Conditional Column Header for Admin */}
+                 {userRole === 'Admin' && (
+                     <th className="px-6 py-3 rounded-tr-lg text-red-600">Acciones</th>
+                 )}
                </tr>
              </thead>
              <tbody className="divide-y divide-slate-100">
@@ -270,10 +317,28 @@ export const InfoManagementModule: React.FC = () => {
                          {student.status === 'Active' ? 'Activo' : student.status === 'Graduated' ? 'Graduado' : 'En Pausa'}
                       </span>
                    </td>
+                   
+                   {/* Conditional Actions for Admin */}
+                   {userRole === 'Admin' && (
+                       <td className="px-6 py-4">
+                           <div className="flex items-center gap-2">
+                               <button className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors" title="Editar">
+                                   <Edit size={16} />
+                               </button>
+                               <button 
+                                   onClick={() => handleDelete(student.id)}
+                                   className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors" 
+                                   title="Eliminar"
+                               >
+                                   <Trash2 size={16} />
+                               </button>
+                           </div>
+                       </td>
+                   )}
                  </tr>
                )) : (
                  <tr>
-                    <td colSpan={5} className="text-center py-8 text-slate-400 italic">
+                    <td colSpan={userRole === 'Admin' ? 6 : 5} className="text-center py-8 text-slate-400 italic">
                        No se encontraron resultados
                     </td>
                  </tr>
@@ -289,3 +354,21 @@ export const InfoManagementModule: React.FC = () => {
     </div>
   );
 };
+
+const SettingsIcon = ({ size, className }: { size: number, className?: string }) => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+);
