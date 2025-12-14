@@ -239,7 +239,7 @@ export const NavigationModule: React.FC = () => {
             <div className="divide-y divide-slate-100">
               {dummyContent.map((title, i) => (
                 <div key={i} className="p-4 hover:bg-slate-50 transition-colors flex gap-3 group cursor-pointer">
-                  <div className="w-10 h-12 bg-slate-200 rounded flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-500 transition-colors">
+                  <div className="w-10 h-12 bg-slate-200 rounded flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-500 transition-colors shrink-0">
                       <FileText size={20} />
                   </div>
                   <div>
@@ -269,10 +269,10 @@ export const NavigationModule: React.FC = () => {
             {/* 1. Title Bar */}
             <div className="bg-academic-900 text-white px-4 py-1.5 flex justify-between items-center text-xs select-none">
                <div className="flex gap-4">
-                  <span className="opacity-80 hover:opacity-100 cursor-pointer">Autoguardado <span className="font-bold">ON</span></span>
-                  <span className="font-semibold text-center mx-auto">Documento Académico - Word Processor</span>
+                  <span className="opacity-80 hover:opacity-100 cursor-pointer hidden sm:inline">Autoguardado <span className="font-bold">ON</span></span>
+                  <span className="font-semibold text-center mx-auto truncate">Documento Académico - Word Processor</span>
                </div>
-               <div className="flex gap-2">
+               <div className="flex gap-2 shrink-0">
                    <div className="w-3 h-3 border border-white rounded-full opacity-50"></div>
                    <div className="w-3 h-3 border border-white rounded-full opacity-50"></div>
                    <div className="w-3 h-3 bg-red-400 rounded-full opacity-80 hover:opacity-100 cursor-pointer"></div>
@@ -280,12 +280,12 @@ export const NavigationModule: React.FC = () => {
             </div>
 
             {/* 2. Tab Bar */}
-            <div className="bg-academic-800 text-white px-2 flex text-sm select-none pt-1">
+            <div className="bg-academic-800 text-white px-2 flex text-sm select-none pt-1 overflow-x-auto">
                 {['Inicio', 'Insertar', 'Diseño', 'Referencias', 'Vista'].map(tab => (
                     <div 
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-5 py-1.5 rounded-t-md cursor-pointer transition-colors
+                        className={`px-3 md:px-5 py-1.5 rounded-t-md cursor-pointer transition-colors whitespace-nowrap
                             ${activeTab === tab 
                                 ? 'bg-slate-100 text-slate-900 font-medium shadow-sm z-10' 
                                 : 'text-slate-100 hover:bg-academic-700/50 hover:text-white opacity-90'
@@ -297,28 +297,28 @@ export const NavigationModule: React.FC = () => {
             </div>
 
             {/* 3. Ribbon Toolbar (Dynamic Content) */}
-            <div className="bg-slate-100 border-b border-slate-300 p-1 flex gap-1 shadow-inner h-28 overflow-x-auto select-none">
+            <div className="bg-slate-100 border-b border-slate-300 p-1 flex gap-1 shadow-inner h-28 overflow-x-auto select-none custom-scrollbar">
                 {renderRibbonToolbar()}
             </div>
 
             {/* Document Body Area */}
-            <div className="flex-1 bg-slate-200 p-8 overflow-y-auto flex justify-center custom-scrollbar">
-               <div className="bg-white shadow-xl w-full max-w-3xl min-h-[600px] p-12">
-                   <h1 className="text-3xl font-bold mb-6 text-slate-900">Análisis de Interfaces de Usuario</h1>
-                   <p className="text-base text-slate-800 leading-relaxed mb-6 text-justify">
+            <div className="flex-1 bg-slate-200 p-4 md:p-8 overflow-y-auto flex justify-center custom-scrollbar">
+               <div className="bg-white shadow-xl w-full max-w-3xl min-h-[600px] p-6 md:p-12">
+                   <h1 className="text-2xl md:text-3xl font-bold mb-6 text-slate-900">Análisis de Interfaces de Usuario</h1>
+                   <p className="text-sm md:text-base text-slate-800 leading-relaxed mb-6 text-justify">
                        La evolución de las interfaces gráficas ha llevado a la estandarización de patrones como la 
                        <span className="font-bold"> Cinta de Opciones (Ribbon)</span>. Este patrón, popularizado por suites de oficina, 
                        organiza herramientas complejas en pestañas lógicas, mejorando la descubribilidad de las funciones.
                    </p>
-                   <h2 className="text-xl font-semibold mb-3 text-slate-800">1. Principios de Diseño</h2>
-                   <p className="text-base text-slate-800 leading-relaxed mb-4 text-justify">
+                   <h2 className="text-lg md:text-xl font-semibold mb-3 text-slate-800">1. Principios de Diseño</h2>
+                   <p className="text-sm md:text-base text-slate-800 leading-relaxed mb-4 text-justify">
                        Al diseñar sistemas de navegación complejos, es crucial agrupar elementos relacionados. 
                        Por ejemplo, las herramientas de formato de texto deben estar separadas de las herramientas de inserción de objetos.
                    </p>
-                   <div className="p-4 bg-slate-50 border-l-4 border-academic-500 italic text-slate-600 mb-6">
+                   <div className="p-4 bg-slate-50 border-l-4 border-academic-500 italic text-slate-600 mb-6 text-sm">
                        "El buen diseño es obvio. El gran diseño es transparente." — Joe Sparano
                    </div>
-                   <p className="text-base text-slate-800 leading-relaxed text-justify">
+                   <p className="text-sm md:text-base text-slate-800 leading-relaxed text-justify">
                        Este editor simula dicha experiencia, permitiendo al usuario interactuar con las pestañas superiores 
                        para revelar diferentes conjuntos de herramientas contextuales.
                    </p>

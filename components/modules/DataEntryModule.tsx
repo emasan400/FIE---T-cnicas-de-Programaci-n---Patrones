@@ -106,27 +106,30 @@ export const DataEntryModule: React.FC = () => {
       
       {/* Wizard Pattern - Windows Installer Style */}
       <PatternCard title="Wizard (Estilo Instalador)" className="h-full">
-        <div className="flex justify-center items-center h-full bg-slate-100 p-4 rounded-lg border border-slate-300">
+        <div className="flex justify-center items-center h-full bg-slate-100 p-2 md:p-4 rounded-lg border border-slate-300">
             {/* Installer Window Frame */}
-            <div className="w-full max-w-md bg-slate-50 shadow-2xl border border-slate-400 rounded-sm overflow-hidden flex flex-col h-[400px]">
+            <div className="w-full max-w-md bg-slate-50 shadow-2xl border border-slate-400 rounded-sm overflow-hidden flex flex-col min-h-[450px] md:h-[400px]">
                 {/* Title Bar */}
                 <div className="bg-slate-200 px-3 py-1 border-b border-slate-300 flex items-center justify-between select-none">
-                    <span className="text-xs font-bold text-slate-700">Instalación de Perfil Académico - Asistente</span>
-                    <div className="flex gap-1">
+                    <span className="text-xs font-bold text-slate-700 truncate mr-2">Instalación de Perfil Académico</span>
+                    <div className="flex gap-1 shrink-0">
                         <div className="w-3 h-3 bg-slate-400 rounded-sm"></div>
                         <div className="w-3 h-3 bg-red-400 rounded-sm"></div>
                     </div>
                 </div>
 
                 {/* Content Area */}
-                <div className="flex flex-1">
+                <div className="flex flex-col md:flex-row flex-1">
                     {/* Sidebar Image */}
-                    <div className="w-1/3 bg-indigo-900 p-4 flex flex-col items-center justify-start pt-8 text-indigo-100">
-                         {wizardData.step === 1 && <User size={48} strokeWidth={1.5} />}
-                         {wizardData.step === 2 && <Monitor size={48} strokeWidth={1.5} />}
-                         {wizardData.step === 3 && <HardDrive size={48} strokeWidth={1.5} />}
+                    <div className="w-full md:w-1/3 bg-indigo-900 p-4 flex flex-row md:flex-col items-center md:justify-start justify-between md:pt-8 text-indigo-100 border-b md:border-b-0 md:border-r border-indigo-800">
+                         <div className="flex md:flex-col items-center gap-4 md:gap-0">
+                           {wizardData.step === 1 && <User size={32} className="md:w-12 md:h-12" strokeWidth={1.5} />}
+                           {wizardData.step === 2 && <Monitor size={32} className="md:w-12 md:h-12" strokeWidth={1.5} />}
+                           {wizardData.step === 3 && <HardDrive size={32} className="md:w-12 md:h-12" strokeWidth={1.5} />}
+                           <span className="md:hidden font-bold text-sm">Paso {wizardData.step} de 3</span>
+                         </div>
                          
-                         <div className="mt-8 space-y-2 text-[10px] w-full">
+                         <div className="mt-0 md:mt-8 flex md:flex-col gap-1 md:space-y-2 text-[10px] hidden md:flex w-full">
                             <div className={`p-1 rounded ${wizardData.step === 1 ? 'bg-indigo-700 font-bold' : 'opacity-50'}`}>1. Identidad</div>
                             <div className={`p-1 rounded ${wizardData.step === 2 ? 'bg-indigo-700 font-bold' : 'opacity-50'}`}>2. Contacto</div>
                             <div className={`p-1 rounded ${wizardData.step === 3 ? 'bg-indigo-700 font-bold' : 'opacity-50'}`}>3. Finalizar</div>
@@ -134,14 +137,14 @@ export const DataEntryModule: React.FC = () => {
                     </div>
 
                     {/* Main Form */}
-                    <div className="w-2/3 bg-white p-6 flex flex-col">
+                    <div className="w-full md:w-2/3 bg-white p-6 flex flex-col">
                         <div className="mb-4 border-b pb-2">
                              <h4 className="font-bold text-slate-800">
                                 {wizardData.step === 1 && "Información del Estudiante"}
                                 {wizardData.step === 2 && "Configuración de Contacto"}
                                 {wizardData.step === 3 && "Instalación Completada"}
                              </h4>
-                             <p className="text-xs text-slate-500">
+                             <p className="text-xs text-slate-500 mt-1">
                                 {wizardData.step === 1 && "Por favor ingrese su nombre para continuar con la configuración."}
                                 {wizardData.step === 2 && "Establezca su dirección de correo institucional."}
                                 {wizardData.step === 3 && "El sistema ha guardado sus preferencias correctamente."}
@@ -174,10 +177,10 @@ export const DataEntryModule: React.FC = () => {
                                 </div>
                             )}
                              {wizardData.step === 3 && (
-                                <div className="flex flex-col items-center justify-center h-full space-y-2">
+                                <div className="flex flex-col items-center justify-center h-full space-y-2 py-4">
                                     <Check className="text-green-600" size={32} />
                                     <p className="text-sm font-bold text-slate-800">Operación Exitosa</p>
-                                    <div className="text-xs text-slate-500 bg-slate-50 p-2 rounded border w-full">
+                                    <div className="text-xs text-slate-500 bg-slate-50 p-2 rounded border w-full text-center">
                                         Nombre: {wizardData.name}<br/>
                                         Email: {wizardData.email}
                                     </div>
@@ -188,7 +191,7 @@ export const DataEntryModule: React.FC = () => {
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="bg-slate-100 p-3 border-t border-slate-300 flex justify-end gap-2">
+                <div className="bg-slate-100 p-3 border-t border-slate-300 flex justify-end gap-2 shrink-0">
                     <button 
                         onClick={() => setWizardData(prev => ({...prev, step: Math.max(1, prev.step - 1)}))}
                         disabled={wizardData.step === 1}
@@ -249,14 +252,14 @@ export const DataEntryModule: React.FC = () => {
             
             <div className="text-xs text-slate-500 mt-2 flex justify-between">
                <span>Caracteres: {textValue.length}</span>
-               <span className="font-mono bg-slate-100 px-2 rounded border border-slate-200">Ctrl+Z / Ctrl+S</span>
+               <span className="font-mono bg-slate-100 px-2 rounded border border-slate-200 hidden sm:inline-block">Ctrl+Z / Ctrl+S</span>
             </div>
          </div>
       </PatternCard>
 
       {/* Drag and Drop */}
       <PatternCard title="Gestión de Tareas (Drag & Drop)" className="lg:col-span-2">
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
            {(['todo', 'done'] as const).map(listId => (
              <div 
                key={listId}
@@ -274,7 +277,7 @@ export const DataEntryModule: React.FC = () => {
                      key={item.id}
                      draggable
                      onDragStart={(e) => onDragStart(e, item.id)}
-                     className="bg-white p-3 rounded shadow-sm border border-slate-200 cursor-move flex items-center gap-2 hover:shadow-md transition-shadow group"
+                     className="bg-white p-3 rounded shadow-sm border border-slate-200 cursor-move flex items-center gap-2 hover:shadow-md transition-shadow group active:cursor-grabbing"
                    >
                      <GripVertical size={16} className="text-slate-400 group-hover:text-slate-600" />
                      <span className="text-sm font-medium text-slate-800">{item.content}</span>

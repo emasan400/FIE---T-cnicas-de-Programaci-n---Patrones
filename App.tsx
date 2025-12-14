@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ModuleType } from './types';
 import { DataEntryModule } from './components/modules/DataEntryModule';
 import { NavigationModule } from './components/modules/NavigationModule';
 import { InfoManagementModule } from './components/modules/InfoManagementModule';
-import { Layout, PenTool, Database, GraduationCap, Settings, Menu, Moon, Sun } from 'lucide-react';
+import { Layout, PenTool, Database, GraduationCap, Settings, Menu, Moon, Sun, X } from 'lucide-react';
 
 const App: React.FC = () => {
   const [activeModule, setActiveModule] = useState<ModuleType>(ModuleType.DATA_ENTRY);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Responsive Initialization: Close sidebar by default on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+    
+    // Set initial state
+    if (window.innerWidth < 768) setSidebarOpen(false);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -25,39 +42,66 @@ const App: React.FC = () => {
 
   const NavItem = ({ module, label, icon: Icon }: { module: ModuleType, label: string, icon: any }) => (
     <button
-      onClick={() => setActiveModule(module)}
+      onClick={() => {
+        setActiveModule(module);
+        if (window.innerWidth < 768) setSidebarOpen(false); // Auto-close on mobile selection
+      }}
       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group
         ${activeModule === module 
           ? 'bg-academic-600 text-white shadow-md' 
           : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
     >
       <Icon size={20} className={activeModule === module ? 'animate-pulse' : ''} />
-      <span className={`font-medium ${!sidebarOpen && 'hidden md:hidden'}`}>{label}</span>
+      <span className={`font-medium ${!sidebarOpen && 'md:hidden'}`}>{label}</span>
       {activeModule === module && sidebarOpen && (
-        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white"></div>
+        <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white hidden md:block"></div>
       )}
     </button>
   );
 
   return (
     <div className={`flex h-screen overflow-hidden ${isDarkMode ? 'dark' : ''}`}>
-      <div className="flex h-full w-full bg-slate-100 dark:bg-slate-900 transition-colors duration-300">
+      <div className="flex h-full w-full bg-slate-100 dark:bg-slate-900 transition-colors duration-300 relative">
       
-        {/* Sidebar - Represents Navigation Pattern (Permanent & Collapsible) */}
-        <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-slate-900 text-white transition-all duration-300 flex flex-col shadow-2xl z-20 no-print`}>
-          <div className="p-6 flex items-center justify-between">
-            {sidebarOpen && (
+        {/* Mobile Backdrop */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm transition-opacity"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar - Responsive Behavior: Drawer on Mobile, Collapsible on Desktop */}
+        <aside className={`
+            fixed inset-y-0 left-0 z-40 h-full bg-slate-900 text-white transition-all duration-300 shadow-2xl flex flex-col
+            ${sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 md:translate-x-0 md:w-20'}
+        `}>
+          <div className="p-6 flex items-center justify-between h-20">
+            {(sidebarOpen || window.innerWidth < 768) && (
               <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-white whitespace-nowrap overflow-hidden">
                 <GraduationCap className="text-academic-500 shrink-0" />
-                <span>Patrones - FIE</span>
+                <span className={!sidebarOpen ? 'md:hidden' : ''}>Patrones - FIE</span>
               </div>
             )}
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors">
-              <Menu size={20} />
+            
+            {/* Desktop Toggle Button */}
+            <button 
+                onClick={() => setSidebarOpen(!sidebarOpen)} 
+                className="hidden md:block p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors ml-auto"
+            >
+              {sidebarOpen ? <Menu size={20} /> : <Menu size={20} className="mx-auto" />}
+            </button>
+
+            {/* Mobile Close Button */}
+            <button 
+                onClick={() => setSidebarOpen(false)} 
+                className="md:hidden p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors"
+            >
+              <X size={20} />
             </button>
           </div>
 
-          <nav className="flex-1 px-4 space-y-2 mt-4">
+          <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
             <NavItem module={ModuleType.DATA_ENTRY} label="Ingreso de Datos" icon={PenTool} />
             <NavItem module={ModuleType.NAVIGATION} label="Navegación" icon={Layout} />
             <NavItem module={ModuleType.INFO_MGMT} label="Información" icon={Database} />
@@ -66,13 +110,13 @@ const App: React.FC = () => {
           <div className="p-4 border-t border-slate-800">
              <button 
                onClick={toggleTheme}
-               className={`w-full flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-sm ${!sidebarOpen && 'justify-center'}`}
+               className={`w-full flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-sm ${!sidebarOpen && 'md:justify-center'}`}
              >
                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-               {sidebarOpen && <span>{isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>}
+               {(sidebarOpen) && <span>{isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>}
              </button>
              
-             {sidebarOpen && (
+             {(sidebarOpen) && (
                  <div className="mt-2 flex items-center gap-3 px-4 py-2 text-slate-500 text-sm cursor-not-allowed opacity-50">
                      <Settings size={18} />
                      <span>Más Ajustes</span>
@@ -81,30 +125,41 @@ const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* Main Content Area - Represents Single Page Application */}
-        <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-          <header className="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-8 shadow-sm no-print transition-colors duration-300">
-             <div>
-               <h1 className="text-xl font-bold text-slate-800 dark:text-white">
-                 {activeModule === ModuleType.DATA_ENTRY && "Patrones de Ingreso"}
-                 {activeModule === ModuleType.NAVIGATION && "Patrones de Navegación"}
-                 {activeModule === ModuleType.INFO_MGMT && "Manejo de Información"}
-               </h1>
-               <p className="text-xs text-slate-500 dark:text-slate-400">Módulo Académico Interactivo</p>
+        {/* Main Content Area */}
+        <main className={`flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+          <header className="h-16 shrink-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-4 md:px-8 shadow-sm no-print transition-colors duration-300 z-20">
+             <div className="flex items-center gap-3">
+               {/* Mobile Menu Trigger */}
+               <button 
+                 onClick={() => setSidebarOpen(true)}
+                 className="md:hidden p-2 -ml-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+               >
+                 <Menu size={24} />
+               </button>
+
+               <div>
+                 <h1 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white truncate max-w-[200px] md:max-w-none">
+                   {activeModule === ModuleType.DATA_ENTRY && "Patrones de Ingreso"}
+                   {activeModule === ModuleType.NAVIGATION && "Patrones de Navegación"}
+                   {activeModule === ModuleType.INFO_MGMT && "Manejo de Información"}
+                 </h1>
+                 <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Módulo Académico Interactivo</p>
+               </div>
              </div>
-             <div className="flex items-center gap-4">
+
+             <div className="flex items-center gap-3 md:gap-4">
                <div className="text-right hidden sm:block">
                  <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Emanuel Andres Sanchez</p>
                  <p className="text-xs text-slate-400 dark:text-slate-500">Facultad de Ingenieria del Ejercito</p>
                </div>
-               <div className="w-10 h-10 bg-academic-100 dark:bg-academic-900 text-academic-600 dark:text-academic-100 rounded-full flex items-center justify-center font-bold border border-academic-200 dark:border-academic-700">
+               <div className="w-8 h-8 md:w-10 md:h-10 bg-academic-100 dark:bg-academic-900 text-academic-600 dark:text-academic-100 rounded-full flex items-center justify-center font-bold border border-academic-200 dark:border-academic-700 text-sm md:text-base">
                  ES
                </div>
              </div>
           </header>
 
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-             <div className="max-w-6xl mx-auto">
+          <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+             <div className="max-w-6xl mx-auto w-full">
                 {renderModule()}
              </div>
           </div>
